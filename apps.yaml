@@ -2,21 +2,29 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: t11
-  namespace: t11-beamline
+  namespace: argo-cd
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background
     - resources-finalizer.argocd.argoproj.io/foreground
 spec:
   project: t11-beamline
   destination:
-    name: argus
-    namespace: t11-beamline
+    server: https://kubernetes.default.svc
+    namespace: argo-cd
   source:
     path: apps
-    repoURL: https://github.com/epics-containers/t11-deployment
+    repoURL: https://github.com/gilesknap/t11-deployment
     targetRevision: main
     helm:
       version: v3
+      valuesObject:
+        project: t11-beamline
+        destination:
+          name: in-cluster
+          namespace: t11-beamline
+        source:
+          repoURL: https://github.com/gilesknap/t11-services
+          targetRevision: main
   syncPolicy:
     automated:
       prune: true
